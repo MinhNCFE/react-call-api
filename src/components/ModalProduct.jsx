@@ -1,7 +1,7 @@
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-function ModalProduct({ show, handleClose, handleSubmit, categories, initialData, mode }) {
+function ModalProduct({ show, handleClose, handleSubmit, categories, initialData, mode, error }) {
   return (
     <>
       <Modal show={show} onHide={handleClose}>
@@ -18,8 +18,10 @@ function ModalProduct({ show, handleClose, handleSubmit, categories, initialData
                 placeholder=""
                 defaultValue={initialData?.productName || ""}
                 autoFocus
+                isInvalid={!!error}
                 required
               />
+              {error && <Form.Text className="text-danger">{error}</Form.Text>}
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label >Loại sản phẩm</Form.Label>

@@ -5,11 +5,16 @@ import { useEffect, useState } from "react";
 import ModalProduct from "./ModalProduct";
 import axios from "axios";
 
-function EditProduct({product}) {
+function EditProduct({ product, setProducts }) {
   const [show, setShow] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [error, setError] = useState("");
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setError("");
+  };
+
   const handleShow = () => setShow(true);
 
   useEffect(() => {
@@ -25,7 +30,7 @@ function EditProduct({product}) {
 
     // console.log(value.target.productName.value);
     const updateProduct = {
-        ...product,
+      ...product,
       productName: data.productName.value,
       category: { id: data.categoryId.value },
       productStock: parseInt(data.productStock.value),
@@ -36,11 +41,16 @@ function EditProduct({product}) {
       .put(`http://localhost:8080/api/products/${product.id}`, updateProduct)
       .then((response) => {
         console.log(response.data);
+        setProducts((prev) =>
+          prev.map((p) => (p.id === product.id ? response.data : p))
+        );
         handleClose();
-        window.location.reload();
       })
       .catch((error) => {
         console.error("There was an error!", error);
+        if (error.response?.status === 500) {
+          setError("Tên sản phẩm đã tồn tại");
+        }
       });
   };
 
@@ -56,9 +66,10 @@ function EditProduct({product}) {
         categories={categories}
         initialData={product}
         mode={"edit"}
+        error={error}
       />
     </>
   );
 }
 
-export default EditProduct
+export default EditProduct;

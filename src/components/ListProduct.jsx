@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import EditProduct from "./EditProduct";
+import AddProduct from "./AddProduct";
+import DeleteProduct from "./DeleteProduct";
+import { Col, Row } from "react-bootstrap";
 
 function ListProduct() {
   const [listProducts, setListProducts] = useState([]);
@@ -16,20 +18,27 @@ function ListProduct() {
     });
   }, []);
 
-  const updateStatus = async (id, newStatus) => {
-    try {
-      axios.patch(
+  const updateStatus = (id, newStatus) => {
+    axios
+      .patch(
         `http://localhost:8080/api/products/${id}/status?status=${newStatus}`,
-        {});
-        window.location.reload();
-    } catch (err) {
-      console.error(err);
-    }
+        {}
+      )
+      .then(() => {
+        console.log("ListProducts", listProducts);
+        setListProducts((prev) =>
+          prev.map((p) => {
+            return p.id === id ? { ...p, productStatus: newStatus } : p;
+          })
+        );
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
     <>
-      <Table striped bordered hover>
+      <AddProduct setProducts={setListProducts} />
+      <Table striped bordered hover className="align-middle">
         <thead>
           <tr>
             <th>STT</th>
@@ -76,9 +85,9 @@ function ListProduct() {
               </td>
               <td>{item.productStock}</td>
               <td>{item.productPrice.toLocaleString("vn")} VND</td>
-              <td>
-                <EditProduct product={item} />
-                <Button variant="danger">Xóa</Button>
+              <td className="gap-2 d-flex justify-content-center">
+                <EditProduct product={item} setProducts={setListProducts} />
+                <DeleteProduct product={item} setProducts={setListProducts} />
               </td>
             </tr>
           ))}

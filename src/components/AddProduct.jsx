@@ -5,11 +5,15 @@ import { useEffect, useState } from "react";
 import ModalProduct from "./ModalProduct";
 import axios from "axios";
 
-function AddProduct() {
+function AddProduct({ setProducts }) {
   const [show, setShow] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [error, setError] = useState("");
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setError("");
+  };
   const handleShow = () => {
     setShow(true);
   };
@@ -38,11 +42,16 @@ function AddProduct() {
       .post("http://localhost:8080/api/products", newProduct)
       .then((response) => {
         console.log(response.data);
+
+        setProducts((prev) => [...prev, response.data]);
         handleClose();
         // window.location.reload();
       })
       .catch((error) => {
         console.error("There was an error!", error);
+        if (error.response?.status === 500) {
+          setError("Tên sản phẩm đã tồn tại");
+        }
       });
   };
 
@@ -63,6 +72,7 @@ function AddProduct() {
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         categories={categories}
+        error={error}
       />
     </>
   );

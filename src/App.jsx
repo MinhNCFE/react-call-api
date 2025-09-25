@@ -6,8 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function App() {
   return (
     <>
-      <Container>
-        <AddProduct />
+      <Container className="text-center">
         <ListProduct />
       </Container>
     </>
